@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateLoveNote } from './services/geminiService';
 import HeartBackground from './components/HeartBackground';
@@ -36,15 +36,10 @@ const App: React.FC = () => {
   }, []);
 
   const handleEnvelopeOpen = () => {
+    startMusic();
     setIsEnvelopeOpen(true);
   };
 
-  // Start music as soon as assets are loaded (envelope screen)
-  useEffect(() => {
-    if (isAssetsLoaded) {
-      startMusic();
-    }
-  }, [isAssetsLoaded, startMusic]);
 
   const yesButtonSize = noCount * 20 + 16;
 
