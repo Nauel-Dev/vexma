@@ -5,6 +5,7 @@ import HeartBackground from './components/HeartBackground';
 import Envelope from './components/Envelope';
 import PhotoGallery from './components/PhotoGallery';
 import Loader from './components/Loader';
+import CinematicSlideshow from './components/CinematicSlideshow';
 
 declare global {
   interface Window {
@@ -16,6 +17,7 @@ const App: React.FC = () => {
   const [yesPressed, setYesPressed] = useState(false);
   const [noCount, setNoCount] = useState(0);
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false);
+  const [isSlideshowDone, setIsSlideshowDone] = useState(false);
   const [isAssetsLoaded, setIsAssetsLoaded] = useState(false);
   const [aiNote, setAiNote] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -107,6 +109,10 @@ const App: React.FC = () => {
 
   if (!isEnvelopeOpen) {
     return <Envelope onOpen={() => setIsEnvelopeOpen(true)} />;
+  }
+
+  if (!isSlideshowDone) {
+    return <CinematicSlideshow onComplete={() => setIsSlideshowDone(true)} />;
   }
 
   return (
