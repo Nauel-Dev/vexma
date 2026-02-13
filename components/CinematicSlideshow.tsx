@@ -21,21 +21,21 @@ const captions = [
     "I love you still...",
 ];
 
-// Random Ken Burns directions for variety
+// Subtle Ken Burns — gentle movement, not too zoomed
 const kenBurnsVariants = [
-    { scale: [1, 1.15], x: [0, -20], y: [0, -10] },
-    { scale: [1.1, 1], x: [-10, 10], y: [-5, 5] },
-    { scale: [1, 1.2], x: [0, 15], y: [0, -15] },
-    { scale: [1.15, 1.05], x: [10, -10], y: [5, -5] },
-    { scale: [1, 1.1], x: [0, -10], y: [0, 10] },
-    { scale: [1.1, 1], x: [-15, 0], y: [10, 0] },
+    { scale: [1, 1.06], x: [0, -8], y: [0, -5] },
+    { scale: [1.04, 1], x: [-5, 5], y: [-3, 3] },
+    { scale: [1, 1.05], x: [0, 6], y: [0, -6] },
+    { scale: [1.05, 1.01], x: [5, -5], y: [3, -3] },
+    { scale: [1, 1.04], x: [0, -5], y: [0, 4] },
+    { scale: [1.03, 1], x: [-6, 0], y: [4, 0] },
 ];
 
 const CinematicSlideshow: React.FC<CinematicSlideshowProps> = ({ onComplete }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isComplete, setIsComplete] = useState(false);
 
-    const SLIDE_DURATION = 4000; // 4 seconds per photo
+    const SLIDE_DURATION = 4000;
 
     useEffect(() => {
         if (currentIndex >= media.length) {
@@ -57,8 +57,8 @@ const CinematicSlideshow: React.FC<CinematicSlideshowProps> = ({ onComplete }) =
     return (
         <div className="fixed inset-0 z-50 bg-black overflow-hidden">
             {/* Cinematic letterbox bars */}
-            <div className="absolute top-0 left-0 right-0 h-[8%] bg-black z-20" />
-            <div className="absolute bottom-0 left-0 right-0 h-[8%] bg-black z-20" />
+            <div className="absolute top-0 left-0 right-0 h-[6%] md:h-[8%] bg-black z-20" />
+            <div className="absolute bottom-0 left-0 right-0 h-[6%] md:h-[8%] bg-black z-20" />
 
             <AnimatePresence mode="sync">
                 {!isComplete && currentIndex < media.length && (
@@ -70,11 +70,11 @@ const CinematicSlideshow: React.FC<CinematicSlideshowProps> = ({ onComplete }) =
                         exit={{ opacity: 0 }}
                         transition={{ duration: 1.2, ease: "easeInOut" }}
                     >
-                        {/* Ken Burns animated image */}
+                        {/* Ken Burns animated image — object-contain on mobile for full visibility */}
                         <motion.img
                             src={media[currentIndex]}
                             alt=""
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain md:object-cover"
                             initial={{
                                 scale: kenBurns.scale[0],
                                 x: kenBurns.x[0],
@@ -92,19 +92,19 @@ const CinematicSlideshow: React.FC<CinematicSlideshowProps> = ({ onComplete }) =
                         <div
                             className="absolute inset-0 z-10"
                             style={{
-                                background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%)',
+                                background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%)',
                             }}
                         />
 
                         {/* Caption */}
                         <motion.div
-                            className="absolute bottom-[12%] left-0 right-0 z-30 text-center px-8"
+                            className="absolute bottom-[10%] md:bottom-[12%] left-0 right-0 z-30 text-center px-6"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0 }}
                             transition={{ delay: 0.5 }}
                         >
-                            <p className="text-white text-2xl md:text-4xl font-hand drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] italic">
+                            <p className="text-white text-xl md:text-4xl font-hand drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] italic">
                                 {caption}
                             </p>
                         </motion.div>
@@ -138,11 +138,11 @@ const CinematicSlideshow: React.FC<CinematicSlideshowProps> = ({ onComplete }) =
             </AnimatePresence>
 
             {/* Progress dots */}
-            <div className="absolute bottom-[3%] left-0 right-0 z-30 flex justify-center gap-2">
+            <div className="absolute bottom-[2%] left-0 right-0 z-30 flex justify-center gap-1.5 md:gap-2 flex-wrap px-4">
                 {media.map((_, i) => (
                     <div
                         key={i}
-                        className={`w-2 h-2 rounded-full transition-all duration-300 ${i === currentIndex
+                        className={`w-1.5 h-1.5 md:w-2 md:h-2 rounded-full transition-all duration-300 ${i === currentIndex
                                 ? 'bg-white scale-125'
                                 : i < currentIndex
                                     ? 'bg-white/60'

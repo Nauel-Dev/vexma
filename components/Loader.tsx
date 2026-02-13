@@ -53,9 +53,14 @@ const Loader: React.FC<LoaderProps> = ({ onComplete }) => {
 
     const handleReady = () => {
         // Start music on user click (satisfies browser autoplay policy)
-        const audio = new Audio(music);
+        const audio = document.createElement('audio');
+        const source = document.createElement('source');
+        source.src = music;
+        source.type = 'audio/mpeg';
+        audio.appendChild(source);
         audio.loop = true;
         audio.volume = 0.4;
+        audio.load();
         audio.play().catch(() => { });
         // Store on window so it persists
         (window as any).__bgMusic = audio;
