@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateLoveNote } from './services/geminiService';
 import HeartBackground from './components/HeartBackground';
+import Envelope from './components/Envelope';
+import PhotoGallery from './components/PhotoGallery';
 
 declare global {
   interface Window {
@@ -12,6 +14,7 @@ declare global {
 const App: React.FC = () => {
   const [yesPressed, setYesPressed] = useState(false);
   const [noCount, setNoCount] = useState(0);
+  const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false);
   const [aiNote, setAiNote] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -93,8 +96,13 @@ const App: React.FC = () => {
     }
   };
 
+
+  if (!isEnvelopeOpen) {
+    return <Envelope onOpen={() => setIsEnvelopeOpen(true)} />;
+  }
+
   return (
-    <div className="relative min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-br from-red-50 via-pink-100 to-rose-200 overflow-hidden text-center selection:bg-rose-300 font-sans">
+    <div className="relative min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-br from-red-50 via-pink-100 to-rose-200 overflow-x-hidden text-center selection:bg-rose-300 font-sans">
       <HeartBackground />
 
       <div className="z-10 w-full max-w-3xl px-4 py-8">
@@ -176,43 +184,47 @@ const App: React.FC = () => {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.3 } }}
-              className="flex flex-col items-center bg-white/30 backdrop-blur-sm p-8 md:p-12 rounded-[3rem] shadow-2xl border border-white/40 max-w-2xl mx-auto"
+              className="w-full flex flex-col items-center"
             >
-              <img
-                src="https://media.tenor.com/k6gYrJccYjMAAAAi/mocha-bear.gif"
-                alt="Cute bear asking"
-                className="w-40 h-40 md:w-56 md:h-56 object-contain mb-6 drop-shadow-xl"
-              />
+              <PhotoGallery />
 
-              <div className="mb-8 max-w-lg px-2">
-                <p className="text-lg md:text-xl text-rose-700/90 font-medium italic leading-relaxed">
-                  "This is our second Valentine's together. I am happy we were able to make it here together. You've been an integral part of my growth, and I will be delighted and happy as you are my Valentine. No matter time or place, no matter how many years go by, I will always ask you to be my girlfriend."
-                </p>
-              </div>
+              <div className="flex flex-col items-center bg-white/30 backdrop-blur-sm p-8 md:p-12 rounded-[3rem] shadow-2xl border border-white/40 max-w-2xl mx-auto">
+                <img
+                  src="https://media.tenor.com/k6gYrJccYjMAAAAi/mocha-bear.gif"
+                  alt="Cute bear asking"
+                  className="w-40 h-40 md:w-56 md:h-56 object-contain mb-6 drop-shadow-xl"
+                />
 
-              <h1 className="text-3xl md:text-5xl font-bold text-rose-600 mb-8 font-hand drop-shadow-sm leading-tight">
-                Will you be my Valentine?
-              </h1>
+                <div className="mb-8 max-w-lg px-2">
+                  <p className="text-lg md:text-xl text-rose-700/90 font-medium italic leading-relaxed">
+                    "This is our second Valentine's together. I am happy we were able to make it here together. You've been an integral part of my growth, and I will be delighted and happy as you are my Valentine. No matter time or place, no matter how many years go by, I will always ask you to be my girlfriend."
+                  </p>
+                </div>
 
-              <div className="flex flex-col md:flex-row items-center justify-center gap-6 w-full min-h-[100px] relative">
-                <button
-                  className={`bg-green-500 hover:bg-green-600 text-white font-bold rounded-2xl shadow-green-200/50 shadow-xl transform transition-all duration-200 hover:scale-110 active:scale-95 z-10`}
-                  style={{ fontSize: Math.min(yesButtonSize, 100), padding: `${Math.min(yesButtonSize * 0.5, 50)}px ${Math.min(yesButtonSize, 100)}px` }}
-                  onClick={handleYesClick}
-                >
-                  Yes!
-                </button>
+                <h1 className="text-3xl md:text-5xl font-bold text-rose-600 mb-8 font-hand drop-shadow-sm leading-tight">
+                  Will you be my Valentine?
+                </h1>
 
-                <motion.button
-                  ref={noBtnRef}
-                  animate={{ x: noBtnPosition.x, y: noBtnPosition.y }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  onMouseEnter={handleNoInteraction}
-                  onClick={handleNoInteraction}
-                  className="bg-rose-500 hover:bg-rose-600 text-white font-bold py-4 px-8 rounded-2xl shadow-rose-200/50 shadow-xl z-20 min-w-[120px]"
-                >
-                  {getNoButtonText()}
-                </motion.button>
+                <div className="flex flex-col md:flex-row items-center justify-center gap-6 w-full min-h-[100px] relative">
+                  <button
+                    className={`bg-green-500 hover:bg-green-600 text-white font-bold rounded-2xl shadow-green-200/50 shadow-xl transform transition-all duration-200 hover:scale-110 active:scale-95 z-10`}
+                    style={{ fontSize: Math.min(yesButtonSize, 100), padding: `${Math.min(yesButtonSize * 0.5, 50)}px ${Math.min(yesButtonSize, 100)}px` }}
+                    onClick={handleYesClick}
+                  >
+                    Yes!
+                  </button>
+
+                  <motion.button
+                    ref={noBtnRef}
+                    animate={{ x: noBtnPosition.x, y: noBtnPosition.y }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    onMouseEnter={handleNoInteraction}
+                    onClick={handleNoInteraction}
+                    className="bg-rose-500 hover:bg-rose-600 text-white font-bold py-4 px-8 rounded-2xl shadow-rose-200/50 shadow-xl z-20 min-w-[120px]"
+                  >
+                    {getNoButtonText()}
+                  </motion.button>
+                </div>
               </div>
             </motion.div>
           )}
