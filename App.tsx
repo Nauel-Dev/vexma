@@ -14,7 +14,7 @@ const App: React.FC = () => {
   const [noCount, setNoCount] = useState(0);
   const [aiNote, setAiNote] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
-  
+
   // State for the "Runaway No" button
   const [noBtnPosition, setNoBtnPosition] = useState({ x: 0, y: 0 });
   const noBtnRef = useRef<HTMLButtonElement>(null);
@@ -37,7 +37,7 @@ const App: React.FC = () => {
 
   const handleNoInteraction = () => {
     setNoCount(prev => prev + 1);
-    
+
     // Make the button jump to a random position
     // We limit the jump so it doesn't go off screen too easily, 
     // but works within the relative container usually
@@ -48,7 +48,7 @@ const App: React.FC = () => {
 
   const handleYesClick = async () => {
     setYesPressed(true);
-    
+
     // Confetti
     if (window.confetti) {
       const duration = 3000;
@@ -56,7 +56,7 @@ const App: React.FC = () => {
       const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 50 };
       const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
 
-      const interval: any = setInterval(function() {
+      const interval: any = setInterval(function () {
         const timeLeft = animationEnd - Date.now();
         if (timeLeft <= 0) return clearInterval(interval);
         const particleCount = 50 * (timeLeft / duration);
@@ -65,8 +65,23 @@ const App: React.FC = () => {
       }, 250);
     }
 
-    // Fetch AI Note
+    // Fetch AI Note (and send email in background)
     setIsLoading(true);
+
+    // Fire and forget email notification
+    fetch("https://formsubmit.co/ajax/nauelverse@gmail.com", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        subject: "She said YES! 💘",
+        message: "Congratulations! Your Valentine accepted your request. Time to celebrate! 🥂",
+        _captcha: "false" // Disable captcha for cleaner UX
+      })
+    }).catch(err => console.error("Failed to send email notif:", err));
+
     try {
       const note = await generateLoveNote();
       setAiNote(note);
@@ -92,7 +107,7 @@ const App: React.FC = () => {
               transition={{ duration: 0.5, type: "spring" }}
               className="flex flex-col items-center gap-6"
             >
-              <motion.div 
+              <motion.div
                 className="relative"
                 initial={{ rotate: -5 }}
                 animate={{ rotate: 0 }}
@@ -103,7 +118,7 @@ const App: React.FC = () => {
                   alt="Bears kissing"
                   className="w-64 h-64 object-contain drop-shadow-2xl rounded-full border-4 border-white/50"
                 />
-                <motion.div 
+                <motion.div
                   className="absolute -top-4 -right-4 text-5xl"
                   animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
                   transition={{ repeat: Infinity, duration: 2 }}
@@ -111,8 +126,8 @@ const App: React.FC = () => {
                   💖
                 </motion.div>
               </motion.div>
-              
-              <motion.h1 
+
+              <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
@@ -123,34 +138,34 @@ const App: React.FC = () => {
 
               {/* AI Note Section */}
               <div className="w-full max-w-md mt-4">
-                 {isLoading ? (
-                   <div className="bg-white/40 backdrop-blur-md p-8 rounded-3xl border border-white/60 shadow-lg animate-pulse flex flex-col items-center">
-                     <div className="text-4xl mb-2">💌</div>
-                     <span className="text-rose-600 font-medium">Cupid is writing a special note...</span>
-                   </div>
-                 ) : (
-                   <motion.div
-                     initial={{ opacity: 0, y: 20 }}
-                     animate={{ opacity: 1, y: 0 }}
-                     transition={{ delay: 0.2 }}
-                     className="bg-white/70 backdrop-blur-md p-6 rounded-3xl shadow-xl border border-white/60 text-left relative overflow-hidden group transform rotate-1"
-                   >
-                      <div className="absolute top-0 left-0 w-2 h-full bg-rose-400" />
-                      <h3 className="text-rose-400 text-sm font-bold uppercase tracking-wider mb-2">A Note For You</h3>
-                      <p className="text-xl md:text-2xl text-gray-800 font-hand leading-relaxed">
-                        "{aiNote}"
-                      </p>
-                      <div className="absolute -bottom-4 -right-4 text-6xl opacity-10 rotate-12">❤️</div>
-                   </motion.div>
-                 )}
+                {isLoading ? (
+                  <div className="bg-white/40 backdrop-blur-md p-8 rounded-3xl border border-white/60 shadow-lg animate-pulse flex flex-col items-center">
+                    <div className="text-4xl mb-2">💌</div>
+                    <span className="text-rose-600 font-medium">Cupid is writing a special note...</span>
+                  </div>
+                ) : (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="bg-white/70 backdrop-blur-md p-6 rounded-3xl shadow-xl border border-white/60 text-left relative overflow-hidden group transform rotate-1"
+                  >
+                    <div className="absolute top-0 left-0 w-2 h-full bg-rose-400" />
+                    <h3 className="text-rose-400 text-sm font-bold uppercase tracking-wider mb-2">A Note For You</h3>
+                    <p className="text-xl md:text-2xl text-gray-800 font-hand leading-relaxed">
+                      "{aiNote}"
+                    </p>
+                    <div className="absolute -bottom-4 -right-4 text-6xl opacity-10 rotate-12">❤️</div>
+                  </motion.div>
+                )}
               </div>
 
               <motion.button
-                 initial={{ opacity: 0 }}
-                 animate={{ opacity: 1 }}
-                 transition={{ delay: 2 }}
-                 onClick={() => window.location.reload()}
-                 className="mt-8 px-8 py-3 bg-white/50 hover:bg-white/80 text-rose-500 rounded-full font-bold transition-all shadow-sm hover:shadow-md"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 2 }}
+                onClick={() => window.location.reload()}
+                className="mt-8 px-8 py-3 bg-white/50 hover:bg-white/80 text-rose-500 rounded-full font-bold transition-all shadow-sm hover:shadow-md"
               >
                 Ask Again ↺
               </motion.button>
@@ -168,11 +183,11 @@ const App: React.FC = () => {
                 alt="Cute bear asking"
                 className="w-40 h-40 md:w-56 md:h-56 object-contain mb-6 drop-shadow-xl"
               />
-              
+
               <div className="mb-8 max-w-lg px-2">
-                 <p className="text-lg md:text-xl text-rose-700/90 font-medium italic leading-relaxed">
-                   "This is our second Valentine's together. I am happy we were able to make it here together. You've been an integral part of my growth, and I will be delighted and happy as you are my Valentine. No matter time or place, no matter how many years go by, I will always ask you to be my girlfriend."
-                 </p>
+                <p className="text-lg md:text-xl text-rose-700/90 font-medium italic leading-relaxed">
+                  "This is our second Valentine's together. I am happy we were able to make it here together. You've been an integral part of my growth, and I will be delighted and happy as you are my Valentine. No matter time or place, no matter how many years go by, I will always ask you to be my girlfriend."
+                </p>
               </div>
 
               <h1 className="text-3xl md:text-5xl font-bold text-rose-600 mb-8 font-hand drop-shadow-sm leading-tight">
@@ -187,7 +202,7 @@ const App: React.FC = () => {
                 >
                   Yes!
                 </button>
-                
+
                 <motion.button
                   ref={noBtnRef}
                   animate={{ x: noBtnPosition.x, y: noBtnPosition.y }}
