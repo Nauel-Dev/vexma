@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateLoveNote } from './services/geminiService';
 import HeartBackground from './components/HeartBackground';
@@ -20,7 +20,6 @@ const App: React.FC = () => {
   const [isAssetsLoaded, setIsAssetsLoaded] = useState(false);
   const [aiNote, setAiNote] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
 
   // State for the "Runaway No" button
   const [noBtnPosition, setNoBtnPosition] = useState({ x: 0, y: 0 });
@@ -36,17 +35,16 @@ const App: React.FC = () => {
     audioRef.current.play().catch(() => { });
   }, []);
 
-  const toggleMute = () => {
-    if (audioRef.current) {
-      audioRef.current.muted = !audioRef.current.muted;
-      setIsMuted(!isMuted);
-    }
-  };
-
   const handleEnvelopeOpen = () => {
     setIsEnvelopeOpen(true);
-    startMusic();
   };
+
+  // Start music as soon as assets are loaded (envelope screen)
+  useEffect(() => {
+    if (isAssetsLoaded) {
+      startMusic();
+    }
+  }, [isAssetsLoaded, startMusic]);
 
   const yesButtonSize = noCount * 20 + 16;
 
@@ -265,15 +263,6 @@ const App: React.FC = () => {
       <footer className="fixed bottom-4 w-full text-center text-rose-400 text-sm font-medium">
         Made with ❤️ for you
       </footer>
-
-      {/* Mute/Unmute Button */}
-      <button
-        onClick={toggleMute}
-        className="fixed top-4 right-4 z-50 bg-white/60 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-white/80 transition-colors text-xl"
-        aria-label={isMuted ? "Unmute" : "Mute"}
-      >
-        {isMuted ? '🔇' : '🎵'}
-      </button>
     </div>
   );
 };
