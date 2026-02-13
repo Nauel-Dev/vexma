@@ -1,9 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateLoveNote } from './services/geminiService';
 import HeartBackground from './components/HeartBackground';
 import Envelope from './components/Envelope';
 import PhotoGallery from './components/PhotoGallery';
+import Loader from './components/Loader';
+import { music } from './utils/media';
 
 declare global {
   interface Window {
@@ -15,12 +17,36 @@ const App: React.FC = () => {
   const [yesPressed, setYesPressed] = useState(false);
   const [noCount, setNoCount] = useState(0);
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false);
+  const [isAssetsLoaded, setIsAssetsLoaded] = useState(false);
   const [aiNote, setAiNote] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
 
   // State for the "Runaway No" button
   const [noBtnPosition, setNoBtnPosition] = useState({ x: 0, y: 0 });
   const noBtnRef = useRef<HTMLButtonElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const startMusic = useCallback(() => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio(music);
+      audioRef.current.loop = true;
+      audioRef.current.volume = 0.4;
+    }
+    audioRef.current.play().catch(() => { });
+  }, []);
+
+  const toggleMute = () => {
+    if (audioRef.current) {
+      audioRef.current.muted = !audioRef.current.muted;
+      setIsMuted(!isMuted);
+    }
+  };
+
+  const handleEnvelopeOpen = () => {
+    setIsEnvelopeOpen(true);
+    startMusic();
+  };
 
   const yesButtonSize = noCount * 20 + 16;
 
@@ -97,8 +123,13 @@ const App: React.FC = () => {
   };
 
 
+
+  if (!isAssetsLoaded) {
+    return <Loader onComplete={() => setIsAssetsLoaded(true)} />;
+  }
+
   if (!isEnvelopeOpen) {
-    return <Envelope onOpen={() => setIsEnvelopeOpen(true)} />;
+    return <Envelope onOpen={handleEnvelopeOpen} />;
   }
 
   return (
@@ -234,6 +265,15 @@ const App: React.FC = () => {
       <footer className="fixed bottom-4 w-full text-center text-rose-400 text-sm font-medium">
         Made with ❤️ for you
       </footer>
+
+      {/* Mute/Unmute Button */}
+      <button
+        onClick={toggleMute}
+        className="fixed top-4 right-4 z-50 bg-white/60 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-white/80 transition-colors text-xl"
+        aria-label={isMuted ? "Unmute" : "Mute"}
+      >
+        {isMuted ? '🔇' : '🎵'}
+      </button>
     </div>
   );
 };

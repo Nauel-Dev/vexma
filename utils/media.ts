@@ -14,3 +14,5 @@ export const media = [
 ];
 
 export const video = "/us/WhatsApp Video 2026-02-13 at 12.16.18 PM.mp4";
+
+export const music = "/Love Me.mp3";
