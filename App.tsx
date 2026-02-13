@@ -1,11 +1,10 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateLoveNote } from './services/geminiService';
 import HeartBackground from './components/HeartBackground';
 import Envelope from './components/Envelope';
 import PhotoGallery from './components/PhotoGallery';
 import Loader from './components/Loader';
-import { music } from './utils/media';
 
 declare global {
   interface Window {
@@ -24,21 +23,6 @@ const App: React.FC = () => {
   // State for the "Runaway No" button
   const [noBtnPosition, setNoBtnPosition] = useState({ x: 0, y: 0 });
   const noBtnRef = useRef<HTMLButtonElement>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  const startMusic = useCallback(() => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio(music);
-      audioRef.current.loop = true;
-      audioRef.current.volume = 0.4;
-    }
-    audioRef.current.play().catch(() => { });
-  }, []);
-
-  const handleEnvelopeOpen = () => {
-    startMusic();
-    setIsEnvelopeOpen(true);
-  };
 
 
   const yesButtonSize = noCount * 20 + 16;
@@ -122,7 +106,7 @@ const App: React.FC = () => {
   }
 
   if (!isEnvelopeOpen) {
-    return <Envelope onOpen={handleEnvelopeOpen} />;
+    return <Envelope onOpen={() => setIsEnvelopeOpen(true)} />;
   }
 
   return (
