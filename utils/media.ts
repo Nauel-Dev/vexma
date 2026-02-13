@@ -1,18 +1,18 @@
 export const media = [
-    "/us/WhatsApp Image 2026-02-13 at 12.16.15 PM (1).jpeg",
-    "/us/WhatsApp Image 2026-02-13 at 12.16.15 PM.jpeg",
-    "/us/WhatsApp Image 2026-02-13 at 12.16.16 PM (1).jpeg",
-    "/us/WhatsApp Image 2026-02-13 at 12.16.16 PM.jpeg",
-    "/us/WhatsApp Image 2026-02-13 at 12.16.17 PM (1).jpeg",
-    "/us/WhatsApp Image 2026-02-13 at 12.16.17 PM (2).jpeg",
-    "/us/WhatsApp Image 2026-02-13 at 12.16.17 PM.jpeg",
-    "/us/WhatsApp Image 2026-02-13 at 12.16.18 PM.jpeg",
-    "/us/WhatsApp Image 2026-02-13 at 12.16.19 PM (1).jpeg",
-    "/us/WhatsApp Image 2026-02-13 at 12.16.19 PM.jpeg",
-    "/us/WhatsApp Image 2026-02-13 at 12.16.20 PM (1).jpeg",
-    "/us/WhatsApp Image 2026-02-13 at 12.16.20 PM.jpeg",
+    "/us/photo-01.jpeg",
+    "/us/photo-02.jpeg",
+    "/us/photo-03.jpeg",
+    "/us/photo-04.jpeg",
+    "/us/photo-05.jpeg",
+    "/us/photo-06.jpeg",
+    "/us/photo-07.jpeg",
+    "/us/photo-08.jpeg",
+    "/us/photo-09.jpeg",
+    "/us/photo-10.jpeg",
+    "/us/photo-11.jpeg",
+    "/us/photo-12.jpeg",
 ];
 
-export const video = "/us/WhatsApp Video 2026-02-13 at 12.16.18 PM.mp4";
+export const video = "/us/video-01.mp4";
 
 export const music = "/love-me.mp3";
