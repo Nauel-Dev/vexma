@@ -14,6 +14,7 @@ const Loader: React.FC<LoaderProps> = ({ onComplete }) => {
         const assets = [...media, video, music].filter(Boolean) as string[];
         let loadedCount = 0;
         const total = assets.length;
+        let isMounted = true;
 
         if (total === 0) {
             setIsReady(true);
@@ -21,33 +22,72 @@ const Loader: React.FC<LoaderProps> = ({ onComplete }) => {
         }
 
         const updateProgress = () => {
+            if (!isMounted) return;
             loadedCount++;
             const newProgress = Math.round((loadedCount / total) * 100);
             setProgress(newProgress);
 
             if (loadedCount === total) {
-                setTimeout(() => setIsReady(true), 400);
+                setTimeout(() => {
+                    if (isMounted) setIsReady(true);
+                }, 400);
             }
         };
 
+        // Global fallback: if loading takes too long (e.g. 10s), force completion
+        const globalTimeoutId = setTimeout(() => {
+            if (isMounted && loadedCount < total) {
+                console.warn("Loader timed out. Forcing completion.");
+                setIsReady(true);
+            }
+        }, 10000); // 10 seconds max wait time
+
         assets.forEach(src => {
-            if (src.endsWith('.mp4') || src.endsWith('.webm')) {
-                const vid = document.createElement('video');
-                vid.src = src;
-                vid.onloadeddata = updateProgress;
-                vid.onerror = updateProgress;
-            } else if (src.endsWith('.mp3') || src.endsWith('.wav') || src.endsWith('.ogg')) {
-                const audio = new Audio();
-                audio.src = src;
-                audio.oncanplaythrough = updateProgress;
-                audio.onerror = updateProgress;
-            } else {
-                const img = new Image();
-                img.src = src;
-                img.onload = updateProgress;
-                img.onerror = updateProgress;
+            let handled = false;
+            const onComplete = () => {
+                if (handled) return;
+                handled = true;
+                clearTimeout(timeoutId);
+                updateProgress();
+            };
+
+            // Individual asset safety timeout
+            const timeoutId = setTimeout(() => {
+                onComplete();
+            }, 5000); // 5 seconds max per asset
+
+            try {
+                const srcString = String(src).toLowerCase(); // Handle potential non-string imports safely
+
+                if (srcString.endsWith('.mp4') || srcString.endsWith('.webm')) {
+                    const vid = document.createElement('video');
+                    vid.src = src;
+                    vid.load();
+                    vid.onloadeddata = onComplete;
+                    vid.onerror = onComplete;
+                } else if (srcString.endsWith('.mp3') || srcString.endsWith('.wav') || srcString.endsWith('.ogg')) {
+                    const audio = new Audio();
+                    audio.src = src;
+                    audio.load();
+                    // 'onloadeddata' is faster/less strict than 'oncanplaythrough'
+                    audio.onloadeddata = onComplete;
+                    audio.onerror = onComplete;
+                } else {
+                    const img = new Image();
+                    img.src = src;
+                    img.onload = onComplete;
+                    img.onerror = onComplete;
+                }
+            } catch (error) {
+                console.error("Error determining asset type for:", src, error);
+                onComplete(); // Count as loaded to avoid hanging
             }
         });
+
+        return () => {
+            isMounted = false;
+            clearTimeout(globalTimeoutId);
+        };
 
     }, []);
 
